@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SSI Use-Case Matrix · v3</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -114,6 +117,28 @@
   .crititem .qual{font-size:13px;color:var(--muted);line-height:1.5;border-left:3px solid var(--accent-2);padding-left:11px}
   .crititem .qual b{color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px}
   @media(max-width:760px){.critgrid{grid-template-columns:1fr}.crititem:nth-child(odd){border-right:none}}
+
+  /* header hover tooltip (appears below the sticky header) */
+  th.crit{cursor:help}
+  .hdrtip{position:relative}
+  .hdrtip .htext{
+    visibility:hidden;opacity:0;transition:opacity .14s ease;
+    position:absolute;z-index:30;top:140%;left:50%;transform:translateX(-50%);
+    width:240px;background:var(--ink);color:var(--paper);text-align:left;
+    font-family:'IBM Plex Sans',sans-serif;font-size:12px;line-height:1.45;font-weight:400;
+    letter-spacing:0;text-transform:none;padding:11px 13px;border-radius:4px;
+    box-shadow:0 6px 20px rgba(0,0,0,.35);pointer-events:none;white-space:normal;
+  }
+  .hdrtip .htext::after{content:"";position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:var(--ink)}
+  .hdrtip:hover .htext{visibility:visible;opacity:1}
+  /* keep the rightmost column tooltip from clipping at the scroll edge */
+  th.crit:last-child .htext{left:auto;right:0;transform:none}
+  th.crit:last-child .htext::after{left:auto;right:24px;transform:none}
+  .hdrtip .htext .htlabel{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9fb4e8;margin-bottom:5px}
+  .hdrtip .htext .hqual{display:block;margin-top:7px;padding-top:7px;border-top:1px solid #2c3550;color:#d9d4c8}
+  .hdrtip .htext .hqual b{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9fb4e8;margin-bottom:2px}
+  /* let tooltips escape the scroll container clipping */
+  thead th{overflow:visible}
 </style>
 </head>
 <body>
@@ -126,7 +151,7 @@
   </header>
 
   <details class="critref" id="critref">
-    <summary><span class="arrow">&#9656;</span> Review Criteria Description <span class="hint">how each column is judged — click to expand</span></summary>
+    <summary><span class="arrow">&#9656;</span> Review Criteria Description <span class="hint">how each column is judged — hover to peek, click to pin</span></summary>
     <div class="critgrid" id="critgrid"></div>
   </details>
 
@@ -161,10 +186,10 @@
           <th>Tag</th>
           <th>Specific Scenario</th>
           <th>Benefit</th>
-          <th class="crit" title="Reusability & portability are structural requirements">1.1 Reusable / Portable</th>
-          <th class="crit" title="The buyer is the middle-tier service, not the end user">1.2 Buyer is Mid-Tier</th>
-          <th class="crit" title="Sits in the trust layer; displaces the intermediary">1.3 Trust-Layer Fit</th>
-          <th class="crit" title="Identity as enabler to reduce cost & liability">1.4 Cuts Cost / Liability</th>
+          <th class="crit"><span class="hdrtip">1.1 Reusable / Portable<span class="htext" data-crit="0"></span></span></th>
+          <th class="crit"><span class="hdrtip">1.2 Buyer is Mid-Tier<span class="htext" data-crit="1"></span></span></th>
+          <th class="crit"><span class="hdrtip">1.3 Trust-Layer Fit<span class="htext" data-crit="2"></span></span></th>
+          <th class="crit"><span class="hdrtip">1.4 Cuts Cost / Liability<span class="htext" data-crit="3"></span></span></th>
         </tr>
       </thead>
       <tbody id="tbody">
@@ -344,12 +369,28 @@ function buildCritRef(){
       <div class="qual"><b>Qualification</b>${escapeHtml(c.qual)}</div>
     </div>`;
   }).join('');
-  // sync header tooltips (title attr) with the qualification text
-  document.querySelectorAll('th.crit').forEach((th,i)=>{
-    if(CRIT[i]) th.title=CRIT[i].desc+"  \u2014  "+CRIT[i].qual;
+  // sync styled header tooltips with the criterion description + qualification
+  document.querySelectorAll('.htext[data-crit]').forEach(el=>{
+    const c=CRIT[+el.dataset.crit];
+    if(c) el.innerHTML=`<span class="htlabel">${escapeHtml(c.label)}</span>${escapeHtml(c.desc)}`+
+      `<span class="hqual"><b>Qualification</b>${escapeHtml(c.qual)}</span>`;
   });
 }
 buildCritRef();
+
+/* Hover opens the Review Criteria panel; mouse-leave closes it.
+   A click "pins" it so it stays open/closed regardless of hover. */
+(function(){
+  const ref=document.getElementById('critref');
+  const summary=ref.querySelector('summary');
+  let pinned=false;
+  summary.addEventListener('click',()=>{
+    // native toggle already flipped ref.open by the time this fires
+    pinned=ref.open;            // pinned open if now open; unpinned if now closed
+  });
+  ref.addEventListener('mouseenter',()=>{ if(!pinned) ref.open=true; });
+  ref.addEventListener('mouseleave',()=>{ if(!pinned) ref.open=false; });
+})();
 
 loadData();
 </script>
