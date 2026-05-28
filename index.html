@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSI Use-Case Matrix · Supabase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0d0f12;--paper:#f4f1ea;--paper-2:#e9e4d8;--line:#1a1c20;
+    --accent:#e4451f;--accent-2:#1f5fe4;--muted:#6b6b64;--row-hover:#fffdf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;line-height:1.45;
+    background-image:radial-gradient(var(--paper-2) 1px,transparent 1px);
+    background-size:22px 22px;min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:56px 28px 96px}
+  header.masthead{border-bottom:3px solid var(--line);padding-bottom:22px;margin-bottom:8px}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(38px,7vw,82px);line-height:.92;letter-spacing:-.02em;margin:10px 0 6px}
+  h1 em{font-style:italic;color:var(--accent)}
+  .sub{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);max-width:62ch}
+  .source-tag{display:inline-block;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;padding:4px 9px;border:1.5px solid var(--accent-2);color:var(--accent-2);text-transform:uppercase}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:28px 0 18px}
+  .search{flex:1;min-width:240px;position:relative}
+  .search input{width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;padding:13px 14px 13px 38px;background:#fff;border:2px solid var(--line);color:var(--ink);outline:none}
+  .search input:focus{border-color:var(--accent)}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;opacity:.5}
+  .filters{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;letter-spacing:.04em;padding:8px 13px;border:1.5px solid var(--line);background:transparent;cursor:pointer;text-transform:uppercase;transition:all .15s ease;white-space:nowrap}
+  .chip:hover{background:var(--line);color:var(--paper)}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:14px}
+
+  .tablecard{border:3px solid var(--line);background:#fff;box-shadow:10px 10px 0 var(--line);overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;text-align:left;padding:15px 18px;position:sticky;top:0;z-index:2}
+  tbody td{padding:15px 18px;border-bottom:1px solid var(--paper-2);font-size:14.5px;vertical-align:top}
+  tbody tr:hover{background:var(--row-hover)}
+  tbody tr:last-child td{border-bottom:none}
+  td.usecase{font-family:'Fraunces',serif;font-weight:600;font-size:17px;border-right:1px solid var(--paper-2);width:170px;background:var(--paper)}
+  td.usecase .num{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);font-weight:600;margin-bottom:3px;letter-spacing:.1em}
+  td.industry{font-weight:600;width:190px}
+  td.industry .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent-2);margin-right:8px;vertical-align:middle}
+  td.scenario{color:#2a2a2a}
+  td.benefit{color:var(--muted);font-size:13.5px;width:230px}
+  mark{background:#ffe58a;color:inherit;padding:0 1px}
+
+  .state{padding:54px;text-align:center;font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:13px;line-height:1.7}
+  .state.error{color:var(--accent)}
+  .state code{background:var(--paper-2);padding:2px 6px;border-radius:3px;color:var(--ink)}
+  .spinner{display:inline-block;width:18px;height:18px;border:2.5px solid var(--paper-2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  footer{margin-top:28px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);letter-spacing:.04em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  footer .schema{color:var(--ink)}
+
+  @media(max-width:760px){
+    td.usecase,td.industry,td.benefit{width:auto}
+    thead{display:none}
+    tbody td{display:block;border-bottom:none;padding:6px 16px}
+    tbody tr{display:block;border-bottom:2px solid var(--line);padding:12px 0}
+    td.usecase{background:transparent;border-right:none;padding-top:14px}
+    td.benefit{padding-bottom:14px}
+    .tablecard{box-shadow:6px 6px 0 var(--line)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="kicker">Self-Sovereign Identity · Reference Matrix</div>
+    <h1>SSI Use&#8209;Case <em>Matrix</em></h1>
+    <p class="sub">Generic use cases mapped to industries, with a concrete scenario and the benefit it delivers. Rows are loaded live from a Supabase table.</p>
+    <span class="source-tag" id="srcTag">source: supabase · ssi_use_cases</span>
+  </header>
+
+  <div class="toolbar">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="search industry, scenario, benefit…" autocomplete="off">
+    </div>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <div class="tablecard">
+    <table>
+      <thead>
+        <tr><th>Use Case</th><th>Industry</th><th>Specific Scenario</th><th>Benefit</th></tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="4" class="state"><span class="spinner"></span>Loading rows from Supabase…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <span class="schema">TABLE ssi_use_cases ( use_case · industry · scenario · benefit )</span>
+    <span id="rowstat"></span>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SUPABASE CONFIG  —  replace these two values
+   Find them in: Supabase Dashboard → Project Settings → API
+   ============================================================ */
+const SUPABASE_URL  = "https://YOUR-PROJECT-REF.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR-PUBLIC-ANON-KEY";
+const TABLE = "ssi_use_cases";
+/* ============================================================ */
+
+const tbody   = document.getElementById('tbody');
+const qInput  = document.getElementById('q');
+const filters = document.getElementById('filters');
+const countEl = document.getElementById('count');
+const rowstat = document.getElementById('rowstat');
+
+let DB = [];
+let useCases = [];
+let activeUseCase = null;
+let query = "";
+
+async function loadData(){
+  if(SUPABASE_URL.includes("YOUR-PROJECT-REF")){
+    showState(
+      `Not configured yet. Open this file and set <code>SUPABASE_URL</code> and `+
+      `<code>SUPABASE_ANON_KEY</code> at the top of the script.`, true);
+    return;
+  }
+  try{
+    const url = `${SUPABASE_URL}/rest/v1/${TABLE}`+
+                `?select=use_case,industry,scenario,benefit`+
+                `&order=sort_order.asc`;
+    const res = await fetch(url, {
+      headers:{
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+    if(!res.ok){
+      const body = await res.text();
+      throw new Error(`HTTP ${res.status} — ${body.slice(0,180)}`);
+    }
+    DB = await res.json();
+    if(!DB.length){ showState("Connected, but the table returned 0 rows."); return; }
+    useCases = [...new Set(DB.map(r=>r.use_case))];
+    buildChips();
+    render();
+  }catch(err){
+    showState(`Could not load data.<br>${escapeHtml(err.message)}<br><br>`+
+      `Check the URL/key, that the table exists, and that an anon SELECT policy is enabled.`, true);
+  }
+}
+
+function showState(msg, isError){
+  tbody.innerHTML = `<tr><td colspan="4" class="state ${isError?'error':''}">${msg}</td></tr>`;
+}
+
+function buildChips(){
+  filters.innerHTML = '';
+  const all = mkChip("All", null); all.classList.add('active');
+  filters.appendChild(all);
+  useCases.forEach(uc => filters.appendChild(mkChip(uc, uc)));
+}
+function mkChip(label, val){
+  const b=document.createElement('button');
+  b.className='chip'; b.textContent=label;
+  b.onclick=()=>{ activeUseCase=val;
+    [...filters.children].forEach(c=>c.classList.remove('active'));
+    b.classList.add('active'); render(); };
+  return b;
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function hl(text){
+  if(!query) return escapeHtml(text);
+  const re=new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig');
+  return escapeHtml(text).replace(re,'<mark>$1</mark>');
+}
+
+function render(){
+  const q=query.toLowerCase();
+  let rows=DB.filter(r=>{
+    if(activeUseCase && r.use_case!==activeUseCase) return false;
+    if(!q) return true;
+    return (r.use_case+r.industry+r.scenario+r.benefit).toLowerCase().includes(q);
+  });
+  countEl.textContent=`${rows.length} of ${DB.length} rows`+(activeUseCase?` · ${activeUseCase}`:'')+(query?` · "${query}"`:'');
+  rowstat.textContent=`${rows.length} rows shown`;
+  if(!rows.length){ showState("No rows match your query."); return; }
+
+  let html='', i=0, ucIndex=0;
+  while(i<rows.length){
+    const uc=rows[i].use_case, group=[];
+    while(i<rows.length && rows[i].use_case===uc){ group.push(rows[i]); i++; }
+    ucIndex++;
+    group.forEach((r,gi)=>{
+      html+='<tr>';
+      if(gi===0) html+=`<td class="usecase" rowspan="${group.length}"><span class="num">${String(ucIndex).padStart(2,'0')}</span>${hl(r.use_case)}</td>`;
+      html+=`<td class="industry"><span class="dot"></span>${hl(r.industry)}</td>`;
+      html+=`<td class="scenario">${hl(r.scenario)}</td>`;
+      html+=`<td class="benefit">${hl(r.benefit)}</td>`;
+      html+='</tr>';
+    });
+  }
+  tbody.innerHTML=html;
+}
+
+qInput.addEventListener('input',e=>{ query=e.target.value.trim(); render(); });
+loadData();
+</script>
+</body>
+</html>
