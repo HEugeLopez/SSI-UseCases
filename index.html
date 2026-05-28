@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SSI Use-Case Matrix · v3</title>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij4KICA8IS0tIGJhY2tncm91bmQgdGlsZSwgbWF0Y2hlcyB0aGUgcGFwZXIvaW5rIHRoZW1lIC0tPgogIDxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjEyIiBmaWxsPSIjMGQwZjEyIi8+CiAgPCEtLSBjcmVkZW50aWFsIGNhcmQgLS0+CiAgPHJlY3QgeD0iMTMiIHk9IjE4IiB3aWR0aD0iMzgiIGhlaWdodD0iMjgiIHJ4PSI0IiBmaWxsPSIjZjRmMWVhIi8+CiAgPCEtLSBwb3J0cmFpdCBjaGlwIC0tPgogIDxjaXJjbGUgY3g9IjI0IiBjeT0iMjkiIHI9IjUiIGZpbGw9IiNlNDQ1MWYiLz4KICA8IS0tIGNyZWRlbnRpYWwgbGluZXMgLS0+CiAgPHJlY3QgeD0iMzIiIHk9IjI2IiB3aWR0aD0iMTMiIGhlaWdodD0iMi42IiByeD0iMS4zIiBmaWxsPSIjMWY1ZmU0Ii8+CiAgPHJlY3QgeD0iMzIiIHk9IjMxIiB3aWR0aD0iMTMiIGhlaWdodD0iMi42IiByeD0iMS4zIiBmaWxsPSIjYzljM2I0Ii8+CiAgPHJlY3QgeD0iMTkiIHk9IjM4LjUiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyLjYiIHJ4PSIxLjMiIGZpbGw9IiNjOWMzYjQiLz4KICA8IS0tIHZlcmlmaWNhdGlvbiBjaGVjaywgYm90dG9tLXJpZ2h0IGFjY2VudCAtLT4KICA8Y2lyY2xlIGN4PSI0NSIgY3k9IjQ0IiByPSI5IiBmaWxsPSIjMWI3ZDRmIi8+CiAgPHBhdGggZD0iTTQxIDQ0LjIgTDQ0IDQ3IEw0OS41IDQxIiBmaWxsPSJub25lIiBzdHJva2U9IiNmNGYxZWEiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==">
+<link rel="alternate icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,7 +103,13 @@
     font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
     letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:10px;
     background:var(--ink);color:var(--paper);user-select:none;
+    transition:background .15s ease,padding-left .15s ease;
   }
+  .critref>summary:hover{background:#1d2330;padding-left:24px}
+  .critref:not([open])>summary:hover .arrow{transform:translateX(3px)}
+  .critref[open]>summary:hover .arrow{transform:rotate(90deg) translateX(3px)}
+  .critref[open]>summary:hover{padding-left:18px}
+  .critref>summary:active{background:#252c3c}
   .critref>summary::-webkit-details-marker{display:none}
   .critref>summary .arrow{transition:transform .2s ease;display:inline-block;color:var(--accent)}
   .critref[open]>summary .arrow{transform:rotate(90deg)}
@@ -151,7 +157,7 @@
   </header>
 
   <details class="critref" id="critref">
-    <summary><span class="arrow">&#9656;</span> Review Criteria Description <span class="hint">how each column is judged — hover to peek, click to pin</span></summary>
+    <summary><span class="arrow">&#9656;</span> Review Criteria Description <span class="hint">how each column is judged — click to expand</span></summary>
     <div class="critgrid" id="critgrid"></div>
   </details>
 
@@ -377,20 +383,6 @@ function buildCritRef(){
   });
 }
 buildCritRef();
-
-/* Hover opens the Review Criteria panel; mouse-leave closes it.
-   A click "pins" it so it stays open/closed regardless of hover. */
-(function(){
-  const ref=document.getElementById('critref');
-  const summary=ref.querySelector('summary');
-  let pinned=false;
-  summary.addEventListener('click',()=>{
-    // native toggle already flipped ref.open by the time this fires
-    pinned=ref.open;            // pinned open if now open; unpinned if now closed
-  });
-  ref.addEventListener('mouseenter',()=>{ if(!pinned) ref.open=true; });
-  ref.addEventListener('mouseleave',()=>{ if(!pinned) ref.open=false; });
-})();
 
 loadData();
 </script>
