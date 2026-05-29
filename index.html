@@ -69,7 +69,6 @@
   td.client{min-width:160px}
   .clientpill{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#7a4514;background:#fbeede;border:1px solid #ecc89a;padding:3px 8px;border-radius:999px;white-space:nowrap;cursor:help}
   td.crit{text-align:center;width:108px;min-width:108px;background:var(--crit-band)}
-  th.crit.dual,td.crit.dual{width:130px;min-width:130px}
   tbody tr:hover td.crit{background:#e6ebfa}
 
   .badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:700;line-height:1;border-radius:50%;border:1.5px solid;cursor:default}
@@ -94,6 +93,15 @@
   .tip .tiptext::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--ink)}
   .tip:hover .tiptext{visibility:visible;opacity:1}
   .tip .tiptext .ttlabel{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9fb4e8;margin-bottom:4px}
+  /* combined-verdict tooltip with two sub-verdict rows */
+  .tip .tiptext.tiptext-wide{width:280px}
+  .tip .tiptext .ttsub{display:flex;gap:9px;align-items:flex-start;margin-top:9px;padding-top:9px;border-top:1px solid #2c3550}
+  .tip .tiptext .ttsubicon{flex:0 0 18px;width:18px;height:18px;border-radius:50%;border:1.5px solid;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;line-height:1;margin-top:1px}
+  .tip .tiptext .ttsubicon.Yes{color:var(--yes-bg);background:var(--yes);border-color:var(--yes)}
+  .tip .tiptext .ttsubicon.No{color:var(--no-bg);background:var(--no);border-color:var(--no)}
+  .tip .tiptext .ttsubicon.Partial{color:#1a1c20;background:#e8b94f;border-color:#e8b94f}
+  .tip .tiptext .ttsubbody{flex:1;min-width:0}
+  .tip .tiptext .ttsubbody b{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9fb4e8;margin-bottom:3px;font-weight:600}
 
   .state{padding:48px;text-align:center;font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:13px;line-height:1.7}
   .state.error{color:var(--accent)}
@@ -209,7 +217,7 @@
           <th>Specific Scenario</th>
           <th>Benefit</th>
           <th>Targeted Client</th>
-          <th class="crit dual"><span class="hdrtip"><span class="hline">Reusable</span><span class="hline">Portable</span><span class="htext" data-crit="0"></span></span></th>
+          <th class="crit"><span class="hdrtip"><span class="hline">Reusable</span><span class="hline">Portable</span><span class="htext" data-crit="0"></span></span></th>
           <th class="crit"><span class="hdrtip"><span class="hline">Mid-Tier</span><span class="hline">Buyer</span><span class="htext" data-crit="1"></span></span></th>
           <th class="crit"><span class="hdrtip"><span class="hline">Trust-Layer</span><span class="hline">Fit</span><span class="htext" data-crit="2"></span></span></th>
           <th class="crit"><span class="hdrtip"><span class="hline">Cuts Cost</span><span class="hline">&amp; Liability</span><span class="htext" data-crit="3"></span></span></th>
@@ -350,10 +358,19 @@ function subBadge(v,note,label){
          `<span class="tiptext"><span class="ttlabel">${escapeHtml(label)} · ${escapeHtml(v)}</span>${escapeHtml(note)}</span></span>`;
 }
 function c1Cell(r){
-  // Twin sub-badges in the Reusable & Portable cell
-  const a = subBadge(r.c1a||'Partial', r.c1aj||'', 'Cross-Network Reuse');
-  const b = subBadge(r.c1b||'Partial', r.c1bj||'', 'Open-Network Issuer');
-  return `<div class="twin">${a}${b}</div>`;
+  // Single combined badge; tooltip shows both sub-verdicts with their reasoning.
+  const glyph=ICON[r.c1]||"?";
+  const subA=r.c1a||'Partial', subAj=r.c1aj||'';
+  const subB=r.c1b||'Partial', subBj=r.c1bj||'';
+  return `<span class="tip">`+
+    `<span class="badge ${escapeHtml(r.c1)}" aria-label="${escapeHtml(r.c1)}">${glyph}</span>`+
+    `<span class="tiptext tiptext-wide">`+
+      `<span class="ttlabel">Reusable &amp; Portable \u00b7 ${escapeHtml(r.c1)}</span>`+
+      `<span class="ttsub"><span class="ttsubicon ${escapeHtml(subA)}">${ICON[subA]||'?'}</span>`+
+        `<span class="ttsubbody"><b>Cross-Network Reuse \u00b7 ${escapeHtml(subA)}</b>${escapeHtml(subAj)}</span></span>`+
+      `<span class="ttsub"><span class="ttsubicon ${escapeHtml(subB)}">${ICON[subB]||'?'}</span>`+
+        `<span class="ttsubbody"><b>Open-Network Issuer \u00b7 ${escapeHtml(subB)}</b>${escapeHtml(subBj)}</span></span>`+
+    `</span></span>`;
 }
 
 function render(){
@@ -398,7 +415,7 @@ function render(){
     html+=`<td class="benefit">${hl(r.benefit)}</td>`;
     html+=`<td class="client"><span class="tip"><span class="clientpill">${hl(r.client||'')}</span>`+
           `<span class="tiptext"><span class="ttlabel">Targeted Client</span>${escapeHtml(r.client_note||'')}</span></span></td>`;
-    html+=`<td class="crit dual">${c1Cell(r)}</td>`;
+    html+=`<td class="crit">${c1Cell(r)}</td>`;
     html+=`<td class="crit">${badge(r.c2,r.c2j,CRIT[1].label)}</td>`;
     html+=`<td class="crit">${badge(r.c3,r.c3j,CRIT[2].label)}</td>`;
     html+=`<td class="crit">${badge(r.c4,r.c4j,CRIT[3].label)}</td>`;
