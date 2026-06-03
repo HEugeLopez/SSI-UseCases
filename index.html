@@ -76,7 +76,7 @@
 
   /* Table */
   .scroller{overflow-x:auto;border:3px solid var(--line);box-shadow:10px 10px 0 var(--line);background:#fff}
-  table{width:100%;border-collapse:collapse;min-width:2447px;table-layout:fixed}
+  table{width:100%;border-collapse:collapse;min-width:2447px}
   thead{background:var(--ink);color:var(--paper)}
 
   thead tr.groups th{padding:8px 8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.2em;
@@ -109,19 +109,18 @@
   tbody tr:last-child td{border-bottom:none}
 
   td.col-usecase{font-family:'Fraunces',serif;font-weight:600;font-size:15px;border-right:1px solid var(--paper-2);
-    background:var(--paper);min-width:130px;width:130px}
+    background:var(--paper);min-width:180px}
   td.col-usecase .num{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--accent);font-weight:600;margin-bottom:2px;letter-spacing:.1em}
-  td.col-industry{font-weight:600;border-right:1px solid var(--paper-2);background:#fbfaf6;min-width:100px;width:100px;font-size:13px}
+  td.col-industry{font-weight:600;border-right:1px solid var(--paper-2);background:#fbfaf6;min-width:200px;font-size:13px}
   td.col-industry .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-2);margin-right:6px;vertical-align:middle}
-  td.col-tag{min-width:110px;width:110px}
+  td.col-tag{min-width:200px}
   td.col-scenario{font-size:13px;color:#2a2a2a;min-width:360px;line-height:1.45}
-  td.col-benefit{color:var(--muted);font-size:12.5px;min-width:220px;width:220px;line-height:1.45}
-  td.col-client{min-width:130px;width:130px;border-right:2px solid var(--ssi-band-edge)}
-
-  td.score{text-align:center;background:var(--ssi-band);min-width:56px;width:56px;padding:8px 4px}
-  td.score.tng{background:var(--tng-band);min-width:56px;width:56px}
-  td.score.tng-first{border-left:2px solid var(--tng-band-edge)}
-  td.score.fit{background:var(--fit-band);min-width:80px;width:80px}
+  td.col-benefit{color:var(--muted);font-size:12.5px;min-width:220px;line-height:1.45}
+  td.col-client{min-width:245px;border-right:2px solid var(--ssi-band-edge)}
+  td.score{text-align:center;background:var(--ssi-band);min-width:84px;padding:8px 4px}
+  td.score.tng{background:var(--tng-band);min-width:84px}
+  td.score.tng-first{border-left:2px solid var(--tng-band-edge);min-width:96px}
+  td.score.fit{background:var(--fit-band);min-width:88px}
   td.score.fit-first{border-left:2px solid var(--paper-2)}
   thead tr.cols th.tng-first{border-left:2px solid var(--tng-band-edge)}
   thead tr.cols th.fit-first{border-left:2px solid var(--paper-2)}
@@ -193,10 +192,10 @@
   <div class="scroller">
     <table>
       <colgroup>
-        <col style="width:180px"><col style="width:200px"><col style="width:200px"><col><col style="width:220px"><col style="width:245px">
-        <col style="width:84px"><col style="width:84px"><col style="width:84px"><col style="width:74px"><col style="width:84px">
-        <col style="width:96px"><col style="width:84px"><col style="width:88px"><col style="width:88px"><col style="width:100px">
-        <col style="width:88px"><col style="width:88px">
+        <col style="min-width:180px"><col style="min-width:200px"><col style="min-width:200px"><col><col style="min-width:220px"><col style="min-width:245px">
+        <col style="min-width:84px"><col style="min-width:84px"><col style="min-width:84px"><col style="min-width:74px"><col style="min-width:84px">
+        <col style="min-width:96px"><col style="min-width:84px"><col style="min-width:88px"><col style="min-width:88px"><col style="min-width:100px">
+        <col style="min-width:88px"><col style="min-width:88px">
       </colgroup>
       <thead>
         <tr class="groups">
